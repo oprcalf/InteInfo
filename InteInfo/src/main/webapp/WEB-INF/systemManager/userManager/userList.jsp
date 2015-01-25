@@ -1,78 +1,94 @@
-
 <%@ page contentType="text/html;  charset=UTF-8"%>
 <%@ page pageEncoding="UTF-8"%>
 
-<script type="text/javascript">
+<script type="text/javascript" charset="utf-8">
 	$(function() {
-		$('#systemManager_userManager_datagrid').datagrid(
-				{
-					url : '${pageContext.request.contextPath}/User/userAction!getUserList.action',
-					fit : true,
-					fitColumns : true,
-					border : false,
-					pagination : true,
-					singleSelect : true,
-					pageSize : 100,
-					pageList : [ 100, 200, 300, 400, 500 ],
-					idField : 'userid',
+		$('#systemManager_userManager_datagrid')
+				.datagrid(
+						{
+							url : '${pageContext.request.contextPath}/User/userAction!getUserList.action',
+							fit : true,
+							fitColumns : true,
+							border : false,
+							pagination : true,
+							singleSelect : true,
+							pageSize : 100,
+							pageList : [ 100, 200, 300, 400, 500 ],
+							idField : 'userid',
 
-					columns : [ [ {
-						field : 'userid',
-						title : 'userid',
-						hidden : true,
-						width : 10
-					}, {
-						field : 'username',
-						title : '用户名',
-						sortable : true,
-						order : 'asc',
-						width : 10
-					}, {
-						field : 'createdate',
-						title : '创建时间',
-						width : 20,
-						align : 'right'
-					} ] ],
-					onDblClickRow : function(rowIndex, rowData) {
-						$('#systemManager_userManager_window').window(
-								{
-									title : "用户信息",
-									minimizable : false,
-									maximizable : false,
-									maximized : true,
-									draggable : false,
-									fit : true,
-									modal : true,
-									onOpen : function() {
-										var userid = rowData["userid"];
-										$('#systemManager_userManager_editUserForm').form('load',
-												'${pageContext.request.contextPath}/User/userAction!getUserInfo.action?userid=' + userid);
-									},
-									onClose : function() {
-										$('#systemManager_userManager_datagrid').datagrid('reload', {});
-									}
-								});
-					}
+							columns : [ [ {
+								field : 'userid',
+								title : 'userid',
+								hidden : true,
+								width : 10
+							}, {
+								field : 'username',
+								title : '用户名',
+								sortable : true,
+								order : 'asc',
+								width : 10
+							}, {
+								field : 'createdate',
+								title : '创建时间',
+								width : 20,
+								align : 'right'
+							} ] ],
+							onDblClickRow : function(rowIndex, rowData) {
+								$('#systemManager_userManager_window')
+										.window(
+												{
+													title : "用户信息",
+													minimizable : false,
+													maximizable : false,
+													maximized : true,
+													draggable : false,
+													fit : true,
+													modal : true,
+													onOpen : function() {
+														var userid = rowData["userid"];
+														$(
+																'#systemManager_userManager_editUserForm')
+																.form(
+																		'load',
+																		'${pageContext.request.contextPath}/User/userAction!getUserInfo.action?userid='
+																				+ userid);
+													},
+													onClose : function() {
+														$(
+																'#systemManager_userManager_datagrid')
+																.datagrid(
+																		'reload',
+																		{});
+													}
+												});
+							}
 
-				});
+						});
 	});
 
 	function SaveSM_UM_editUserForm() {
-		var isValid = $('#systemManager_userManager_editUserForm').form('validate');
+		var isValid = $('#systemManager_userManager_editUserForm').form(
+				'validate');
 		if (isValid) {
 			if (window.confirm('确定保存吗?')) {
 				var userid = $('#SM_UM_editUserForm_userid').val();
 				var username = $('#SM_UM_editUserForm_username').val();
 				var email = $('#SM_UM_editUserForm_userEmail').val();
 
-				$('#systemManager_userManager_editUserForm').form('submit', {
-					url : '${pageContext.request.contextPath}/User/userAction!editUserInfo.action?userid=' + userid,
-					success : function() {
-						$.messager.alert('信息框', '保存成功!', 'info');
-						$('#systemManager_userManager_window').window('close');
-						return true;
-					}
-				});
+				$('#systemManager_userManager_editUserForm')
+						.form(
+								'submit',
+								{
+									url : '${pageContext.request.contextPath}/User/userAction!editUserInfo.action?userid='
+											+ userid,
+									success : function() {
+										$.messager
+												.alert('信息框', '保存成功!', 'info');
+										$('#systemManager_userManager_window')
+												.window('close');
+										return true;
+									}
+								});
 			} else {
 				return false;
 			}
@@ -83,8 +99,10 @@
 
 	function ResetSM_UM_editUserForm() {
 		var userid = $('#SM_UM_editUserForm_userid').val();
-		$('#systemManager_userManager_editUserForm').form('load',
-				'${pageContext.request.contextPath}/User/userAction!getUserInfo.action?userid=' + userid);
+		$('#systemManager_userManager_editUserForm').form(
+				'load',
+				'${pageContext.request.contextPath}/User/userAction!getUserInfo.action?userid='
+						+ userid);
 	}
 
 	function searchFun() {
@@ -113,7 +131,8 @@
 			用户信息</div>
 		<div
 			style="border: 1px solid grey; width: 60%; height: 90%; margin: 0 auto">
-			<form id="systemManager_userManager_editUserForm">
+			<form id="systemManager_userManager_editUserForm" method="post"
+				enctype="multipart/form-data">
 				<table style="margin: 0 auto">
 					<tr>
 						<td><input type="hidden" name="userid"
