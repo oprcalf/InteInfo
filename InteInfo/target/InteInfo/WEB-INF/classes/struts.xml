@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+	<!-- 指定由spring负责action对象的创建 -->
+	<constant name="struts.objectFactory" value="spring" />
+	<!-- 所有匹配*.action的请求都由struts2处理 -->
+	<constant name="struts.action.extension" value="action" />
+	<!-- 是否启用开发模式 ,production上面应该换成false -->
+	<constant name="struts.devMode" value="true" />
+	<!-- struts配置文件改动后，是否重新加载 ,production上面应该换成false -->
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<!-- 设置浏览器是否缓存静态内容 -->
+	<constant name="struts.serve.static.browserCache" value="false" />
+	<!-- 请求参数的编码方式 -->
+	<constant name="struts.i18n.encoding" value="utf-8" />
+	<!-- 每次HTTP请求系统都重新加载资源文件，有助于开发 -->
+	<constant name="struts.i18n.reload" value="true" />
+	<!-- 文件上传最大值 -->
+	<constant name="struts.multipart.maxSize" value="104857600" />
+	<!-- 让struts2支持动态方法调用 -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="true" />
+	<!-- Action名称中是否还是用斜线 -->
+	<constant name="struts.enable.SlashesInActionNames" value="false" />
+	<!-- 允许标签中使用表达式语法 -->
+	<constant name="struts.tag.altSyntax" value="true" />
+	<!-- 对于WebLogic,Orion,OC4J此属性应该设置成true -->
+	<constant name="struts.dispatcher.parametersWorkaround" value="false" />
+
+	<package name="basePackage" extends="struts-default">
+		<interceptors>
+
+			<!-- 配置注解拦截器 -->
+			<interceptor name="annotationInterceptor"
+				class="com.opensymphony.xwork2.interceptor.annotations.AnnotationWorkflowInterceptor" />
+			<interceptor-stack name="annotatedStack">
+				<interceptor-ref name="annotationInterceptor" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
+			<!-- 字符集拦截器 -->
+			<interceptor name="encodingInterceptor"
+				class="com.InteInfo.common.Interceptor.EncodingInterceptor" />
+			<interceptor-stack name="encodingStack">
+				<interceptor-ref name="annotatedStack"></interceptor-ref>
+				<interceptor-ref name="encodingInterceptor"></interceptor-ref>
+			</interceptor-stack>
+
+			<!-- 全局异常拦截器 -->
+			<interceptor name="exceptionInterceptor"
+				class="com.InteInfo.common.Interceptor.ExceptionInterceptor" />
+			<interceptor-stack name="exceptionStack">
+				<interceptor-ref name="encodingStack"></interceptor-ref>
+				<interceptor-ref name="exceptionInterceptor"></interceptor-ref>
+			</interceptor-stack>
+
+
+			<!-- Session拦截器 -->
+			<interceptor name="sessionInterceptor"
+				class="com.InteInfo.common.Interceptor.SessionInterceptor" />
+			<interceptor-stack name="sessionStack">
+				<interceptor-ref name="exceptionStack"></interceptor-ref>
+				<interceptor-ref name="sessionInterceptor"></interceptor-ref>
+			</interceptor-stack>
+
+		</interceptors>
+		<!-- 全局拦截器栈 -->
+		<default-interceptor-ref name="sessionStack"></default-interceptor-ref>
+
+
+		<!-- 配置全局的j s p -->
+		<global-results>
+			<!-- 没有session -->
+			<result name="noSession">/WEB-INF/shared/error/nosession.jsp</result>
+			<!-- 没有权限 -->
+			<result name="noSecurity">/WEB-INF/shared/error/noSecurity.jsp</result>
+			<!-- struts异常 -->
+			<result name="strutsException">/WEB-INF/shared/error/strutsException.jsp
+			</result>
+			<!-- 不知名异常 -->
+			<result name="error">/WEB-INF/shared/error/error.jsp</result>
+		</global-results>
+
+		<global-exception-mappings>
+			<exception-mapping result="error"
+				exception="java.lang.Exception"></exception-mapping>
+		</global-exception-mappings>
+	</package>
+
+</struts>
