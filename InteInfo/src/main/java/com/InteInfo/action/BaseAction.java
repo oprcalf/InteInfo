@@ -17,6 +17,7 @@ public class BaseAction extends ActionSupport {
 
 	private static final long serialVersionUID = 6883203228535458267L;
 
+	//Test
 	public void writeJson(Object object) {
 		HandleJson.writeJson(object);
 	}
