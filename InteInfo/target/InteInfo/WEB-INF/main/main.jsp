@@ -12,14 +12,19 @@
 <meta http-equiv="description" content="This is my page">
 </head>
 <body class="easyui-layout">
-	<div data-options="region:'north'" style="height: 60px;"></div>
+	<div data-options="region:'north'"
+		style="height: 60px; background:url(${pageContext.request.contextPath}/resources/images/main/bg_north.jpg);">
+		<div><jsp:include page="north.jsp"></jsp:include></div>
+	</div>
 	<div data-options="region:'south'" style="height: 20px;"></div>
 	<div data-options="region:'west'" style="width: 200px;">
-	<jsp:include page="west.jsp"></jsp:include>
+		<jsp:include page="west.jsp"></jsp:include>
 	</div>
-	<div data-options="region:'east',title:'east',split:true" style="width: 200px;"></div>
-	<div data-options="region:'center',title:'示例系统'" style="overflow: hidden;">
-	<jsp:include page="center.jsp"></jsp:include>
+	<div data-options="region:'east',title:'east',split:true"
+		style="width: 200px;"></div>
+	<div data-options="region:'center',title:'示例系统'"
+		style="overflow: hidden;">
+		<jsp:include page="center.jsp"></jsp:include>
 	</div>
 
 </body>

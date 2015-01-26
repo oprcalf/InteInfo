@@ -65,7 +65,7 @@ public class LoginAction extends BaseAction implements ModelDriven<UserViewModel
 		User user = userService.getUserByStaffID(userViewModel.getStaffid());
 		Boolean checkUser = userService.checkUser(userViewModel.getStaffid(), userViewModel.getUserpassword());
 		if (user != null) {
-			String needPassword = super.getProperties("NeedPassword");
+			String needPassword = getProperties("NeedPassword");
 			Boolean b = true;
 			if (needPassword != null && needPassword != "") {
 				b = Boolean.valueOf(needPassword).booleanValue();

@@ -1,15 +1,13 @@
 /**
- * jQuery EasyUI 1.4.1
- * 
- * Copyright (c) 2009-2014 www.jeasyui.com. All rights reserved.
- *
- * Licensed under the GPL license: http://www.gnu.org/licenses/gpl.txt
- * To use it on other terms please contact us at info@jeasyui.com
- *
- */
-/**
  * tabs - jQuery EasyUI
  * 
+ * Copyright (c) 2009-2013 www.jeasyui.com. All rights reserved.
+ *
+ * Licensed under the GPL or commercial licenses
+ * To use it on other terms please contact us: info@jeasyui.com
+ * http://www.gnu.org/licenses/gpl.txt
+ * http://www.jeasyui.com/license_commercial.php
+ *
  * Dependencies:
  * 	 panel
  *   linkbutton
@@ -118,21 +116,16 @@
 		}
 	}
 	
-	function setSize(container, param) {
+	function setSize(container) {
 		var state = $.data(container, 'tabs');
 		var opts = state.options;
 		var cc = $(container);
 		
-		if (param){
-			$.extend(opts, {
-				width: param.width,
-				height: param.height
-			});
-		}
-		cc._size(opts);
+		opts.fit ? $.extend(opts, cc._fit()) : cc._fit(false);
+		cc.width(opts.width).height(opts.height);
 		
-		var header = cc.children('div.tabs-header');
-		var panels = cc.children('div.tabs-panels');
+		var header = $(container).children('div.tabs-header');
+		var panels = $(container).children('div.tabs-panels');
 		var wrap = header.find('div.tabs-wrap');
 		var ul = wrap.find('.tabs');
 		
@@ -172,8 +165,18 @@
 			
 			setScrollers(container);
 			
-			panels._size('height', isNaN(opts.height) ? '' : (opts.height-header.outerHeight()));
-			panels._size('width', isNaN(opts.width) ? '' : opts.width);
+			var height = opts.height;
+			if (!isNaN(height)) {
+				panels._outerHeight(height - header.outerHeight());
+			} else {
+				panels.height('auto');
+			}
+			var width = opts.width;
+			if (!isNaN(width)){
+				panels._outerWidth(width);
+			} else {
+				panels.width('auto');
+			}
 		}
 	}
 	
@@ -229,7 +232,8 @@
 				function(){$(this).removeClass('tabs-scroller-over');}
 		);
 		cc.bind('_resize', function(e,force){
-			if ($(this).hasClass('easyui-fluid') || force){
+			var opts = $.data(container, 'tabs').options;
+			if (opts.fit == true || force){
 				setSize(container);
 				setSelectedSize(container);
 			}
@@ -337,6 +341,7 @@
 		}));
 		
 		var opts = pp.panel('options');
+		
 		var tabs = $(container).children('div.tabs-header').find('ul.tabs');
 		
 		opts.tab = $('<li></li>').appendTo(tabs);	// set the tab object in panel options
@@ -347,18 +352,15 @@
 				'</a>'
 		);
 		
-		// only update the tab header
 		$(container).tabs('update', {
 			tab: pp,
-			options: opts,
-			type: 'header'
+			options: opts
 		});
 	}
 	
 	function addTab(container, options) {
-		var state = $.data(container, 'tabs');
-		var opts = state.options;
-		var tabs = state.tabs;
+		var opts = $.data(container, 'tabs').options;
+		var tabs = $.data(container, 'tabs').tabs;
 		if (options.selected == undefined) options.selected = true;
 		
 		var pp = $('<div></div>').appendTo($(container).children('div.tabs-panels'));
@@ -367,6 +369,7 @@
 		
 		opts.onAdd.call(container, options.title, tabs.length-1);
 		
+//		setScrollers(container);
 		setSize(container);
 		if (options.selected){
 			selectTab(container, tabs.length-1);	// select the added tab panel
@@ -377,78 +380,74 @@
 	 * update tab panel, param has following properties:
 	 * tab: the tab panel to be updated
 	 * options: the tab panel options
-	 * type: the update type, possible values are: 'header','body','all'
 	 */
 	function updateTab(container, param){
-		param.type = param.type || 'all';
 		var selectHis = $.data(container, 'tabs').selectHis;
 		var pp = param.tab;	// the tab panel
-		var oldTitle = pp.panel('options').title;
+		var oldTitle = pp.panel('options').title; 
+		pp.panel($.extend({}, param.options, {
+			iconCls: (param.options.icon ? param.options.icon : undefined)
+		}));
 		
-		if (param.type == 'all' || param == 'body'){
-			pp.panel($.extend({}, param.options, {
-				iconCls: (param.options.icon ? param.options.icon : undefined)
-			}));
+		var opts = pp.panel('options');	// get the tab panel options
+		var tab = opts.tab;
+		
+		var s_title = tab.find('span.tabs-title');
+		var s_icon = tab.find('span.tabs-icon');
+		s_title.html(opts.title);
+		s_icon.attr('class', 'tabs-icon');
+		
+		tab.find('a.tabs-close').remove();
+		if (opts.closable){
+			s_title.addClass('tabs-closable');
+			$('<a href="javascript:void(0)" class="tabs-close"></a>').appendTo(tab);
+		} else{
+			s_title.removeClass('tabs-closable');
 		}
-		if (param.type == 'all' || param.type == 'header'){
-			var opts = pp.panel('options');	// get the tab panel options
-			var tab = opts.tab;
-			
-			var s_title = tab.find('span.tabs-title');
-			var s_icon = tab.find('span.tabs-icon');
-			s_title.html(opts.title);
-			s_icon.attr('class', 'tabs-icon');
-			
-			tab.find('a.tabs-close').remove();
-			if (opts.closable){
-				s_title.addClass('tabs-closable');
-				$('<a href="javascript:void(0)" class="tabs-close"></a>').appendTo(tab);
-			} else{
-				s_title.removeClass('tabs-closable');
+		if (opts.iconCls){
+			s_title.addClass('tabs-with-icon');
+			s_icon.addClass(opts.iconCls);
+		} else {
+			s_title.removeClass('tabs-with-icon');
+		}
+		
+		if (oldTitle != opts.title){
+			for(var i=0; i<selectHis.length; i++){
+				if (selectHis[i] == oldTitle){
+					selectHis[i] = opts.title;
+				}
 			}
-			if (opts.iconCls){
-				s_title.addClass('tabs-with-icon');
-				s_icon.addClass(opts.iconCls);
+		}
+		
+		tab.find('span.tabs-p-tool').remove();
+		if (opts.tools){
+			var p_tool = $('<span class="tabs-p-tool"></span>').insertAfter(tab.find('a.tabs-inner'));
+			if ($.isArray(opts.tools)){
+				for(var i=0; i<opts.tools.length; i++){
+					var t = $('<a href="javascript:void(0)"></a>').appendTo(p_tool);
+					t.addClass(opts.tools[i].iconCls);
+					if (opts.tools[i].handler){
+						t.bind('click', {handler:opts.tools[i].handler}, function(e){
+							if ($(this).parents('li').hasClass('tabs-disabled')){return;}
+							e.data.handler.call(this);
+						});
+					}
+				}
 			} else {
-				s_title.removeClass('tabs-with-icon');
+				$(opts.tools).children().appendTo(p_tool);
 			}
-			
-			if (oldTitle != opts.title){
-				for(var i=0; i<selectHis.length; i++){
-					if (selectHis[i] == oldTitle){
-						selectHis[i] = opts.title;
-					}
-				}
+			var pr = p_tool.children().length * 12;
+			if (opts.closable) {
+				pr += 8;
+			} else {
+				pr -= 3;
+				p_tool.css('right','5px');
 			}
-			
-			tab.find('span.tabs-p-tool').remove();
-			if (opts.tools){
-				var p_tool = $('<span class="tabs-p-tool"></span>').insertAfter(tab.find('a.tabs-inner'));
-				if ($.isArray(opts.tools)){
-					for(var i=0; i<opts.tools.length; i++){
-						var t = $('<a href="javascript:void(0)"></a>').appendTo(p_tool);
-						t.addClass(opts.tools[i].iconCls);
-						if (opts.tools[i].handler){
-							t.bind('click', {handler:opts.tools[i].handler}, function(e){
-								if ($(this).parents('li').hasClass('tabs-disabled')){return;}
-								e.data.handler.call(this);
-							});
-						}
-					}
-				} else {
-					$(opts.tools).children().appendTo(p_tool);
-				}
-				var pr = p_tool.children().length * 12;
-				if (opts.closable) {
-					pr += 8;
-				} else {
-					pr -= 3;
-					p_tool.css('right','5px');
-				}
-				s_title.css('padding-right', pr+'px');
-			}
+			s_title.css('padding-right', pr+'px');
 		}
 		
+//		setProperties(container);
+//		setScrollers(container);
 		setSize(container);
 		
 		$.data(container, 'tabs').options.onUpdate.call(container, opts.title, getTabIndex(container, pp));
@@ -576,10 +575,7 @@
 		
 		var selected = getSelectedTab(container);
 		if (selected){
-			if (panel[0] == selected[0]){
-				setSelectedSize(container);
-				return;
-			}
+			if (panel[0] == selected[0]){return}
 			unselectTab(container, getTabIndex(container, selected));
 			if (!selected.panel('options').closed){return}
 		}
@@ -641,8 +637,10 @@
 		options = options || {};
 		return this.each(function(){
 			var state = $.data(this, 'tabs');
+			var opts;
 			if (state) {
-				$.extend(state.options, options);
+				opts = $.extend(state.options, options);
+				state.options = opts;
 			} else {
 				$.data(this, 'tabs', {
 					options: $.extend({},$.fn.tabs.defaults, $.fn.tabs.parseOptions(this), options),
@@ -672,9 +670,9 @@
 		tabs: function(jq){
 			return $.data(jq[0], 'tabs').tabs;
 		},
-		resize: function(jq, param){
+		resize: function(jq){
 			return jq.each(function(){
-				setSize(this, param);
+				setSize(this);
 				setSelectedSize(this);
 			});
 		},
@@ -756,7 +754,7 @@
 	
 	$.fn.tabs.parseOptions = function(target){
 		return $.extend({}, $.parser.parseOptions(target, [
-			'tools','toolPosition','tabPosition',
+			'width','height','tools','toolPosition','tabPosition',
 			{fit:'boolean',border:'boolean',plain:'boolean',headerWidth:'number',tabWidth:'number',tabHeight:'number',selected:'number',showHeader:'boolean'}
 		]));
 	};

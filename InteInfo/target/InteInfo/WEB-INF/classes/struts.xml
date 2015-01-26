@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
 <struts>
-
+	<!-- -->
+	<constant name="struts.locale" value="zh_CN" />
+	<constant name="struts.i18n.encoding" value="UTF-8" />
 	<!-- 指定由spring负责action对象的创建 -->
 	<constant name="struts.objectFactory" value="spring" />
 	<!-- 所有匹配*.action的请求都由struts2处理 -->
@@ -40,7 +42,7 @@
 
 			<!-- 字符集拦截器 -->
 			<interceptor name="encodingInterceptor"
-				class="com.InteInfo.common.Interceptor.EncodingInterceptor" />
+				class="com.InteInfo.Interceptor.EncodingInterceptor" />
 			<interceptor-stack name="encodingStack">
 				<interceptor-ref name="annotatedStack"></interceptor-ref>
 				<interceptor-ref name="encodingInterceptor"></interceptor-ref>
@@ -48,7 +50,7 @@
 
 			<!-- 全局异常拦截器 -->
 			<interceptor name="exceptionInterceptor"
-				class="com.InteInfo.common.Interceptor.ExceptionInterceptor" />
+				class="com.InteInfo.Interceptor.ExceptionInterceptor" />
 			<interceptor-stack name="exceptionStack">
 				<interceptor-ref name="encodingStack"></interceptor-ref>
 				<interceptor-ref name="exceptionInterceptor"></interceptor-ref>
@@ -57,7 +59,7 @@
 
 			<!-- Session拦截器 -->
 			<interceptor name="sessionInterceptor"
-				class="com.InteInfo.common.Interceptor.SessionInterceptor" />
+				class="com.InteInfo.Interceptor.SessionInterceptor" />
 			<interceptor-stack name="sessionStack">
 				<interceptor-ref name="exceptionStack"></interceptor-ref>
 				<interceptor-ref name="sessionInterceptor"></interceptor-ref>
@@ -82,8 +84,7 @@
 		</global-results>
 
 		<global-exception-mappings>
-			<exception-mapping result="error"
-				exception="java.lang.Exception"></exception-mapping>
+			<exception-mapping result="error" exception="java.lang.Exception"></exception-mapping>
 		</global-exception-mappings>
 	</package>
 

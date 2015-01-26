@@ -2,9 +2,9 @@
 	font-size:12px;
 }
 body {
-    font-family:verdana,helvetica,arial,sans-serif;
+    font-family:helvetica,tahoma,verdana,sans-serif;
     padding:20px;
-    font-size:12px;
+    font-size:13px;
     margin:0;
 }
 h2 {
@@ -14,8 +14,13 @@ h2 {
     margin-bottom:15px;
 }
 .demo-info{
-	padding:0 0 12px 0;
+	background:#FFFEE6;
+	color:#8F5700;
+	padding:12px;
 }
 .demo-tip{
-	display:none;
+	width:16px;
+	height:16px;
+	margin-right:8px;
+	float:left;
 }

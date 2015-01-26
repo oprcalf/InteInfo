@@ -1,14 +1,12 @@
 /**
- * jQuery EasyUI 1.4.1
- * 
- * Copyright (c) 2009-2014 www.jeasyui.com. All rights reserved.
- *
- * Licensed under the GPL license: http://www.gnu.org/licenses/gpl.txt
- * To use it on other terms please contact us at info@jeasyui.com
- *
- */
-/**
  * accordion - jQuery EasyUI
+ * 
+ * Copyright (c) 2009-2013 www.jeasyui.com. All rights reserved.
+ *
+ * Licensed under the GPL or commercial licenses
+ * To use it on other terms please contact us: info@jeasyui.com
+ * http://www.gnu.org/licenses/gpl.txt
+ * http://www.jeasyui.com/license_commercial.php
  * 
  * Dependencies:
  * 	 panel
@@ -16,27 +14,31 @@
  */
 (function($){
 	
-	function setSize(container, param){
+	function setSize(container){
 		var state = $.data(container, 'accordion');
 		var opts = state.options;
 		var panels = state.panels;
-		var cc = $(container);
 		
-		if (param){
-			$.extend(opts, {
-				width: param.width,
-				height: param.height
-			});
+		var cc = $(container);
+		opts.fit ? $.extend(opts, cc._fit()) : cc._fit(false);
+		
+		if (!isNaN(opts.width)){
+			cc._outerWidth(opts.width);
+		} else {
+			cc.css('width', '');
 		}
-		cc._size(opts);
+		
 		var headerHeight = 0;
 		var bodyHeight = 'auto';
 		var headers = cc.find('>div.panel>div.accordion-header');
 		if (headers.length){
 			headerHeight = $(headers[0]).css('height', '')._outerHeight();
 		}
-		if (!isNaN(parseInt(opts.height))){
+		if (!isNaN(opts.height)){
+			cc._outerHeight(opts.height);
 			bodyHeight = cc.height() - headerHeight*headers.length;
+		} else {
+			cc.css('height', '');
 		}
 		
 		_resize(true, bodyHeight - _resize(false) + 1);
@@ -52,7 +54,7 @@
 						width: cc.width(),
 						height: (collapsible ? pheight : undefined)
 					});
-					totalHeight += p.panel('panel').outerHeight()-headerHeight*h.length;
+					totalHeight += p.panel('panel').outerHeight()-headerHeight;
 				}
 			}
 			return totalHeight;
@@ -141,7 +143,8 @@
 		});
 		
 		cc.bind('_resize', function(e,force){
-			if ($(this).hasClass('easyui-fluid') || force){
+			var opts = $.data(container, 'accordion').options;
+			if (opts.fit == true || force){
 				setSize(container);
 			}
 			return false;
@@ -315,6 +318,7 @@
 		}
 		
 		options = options || {};
+		
 		return this.each(function(){
 			var state = $.data(this, 'accordion');
 			if (state){
@@ -341,9 +345,9 @@
 		panels: function(jq){
 			return $.data(jq[0], 'accordion').panels;
 		},
-		resize: function(jq, param){
+		resize: function(jq){
 			return jq.each(function(){
-				setSize(this, param);
+				setSize(this);
 			});
 		},
 		getSelections: function(jq){
