@@ -1,4 +1,4 @@
-package com.inter.info.utils;
+package com.inter.info.utils.info;
 
 public class HandleEmailInfo implements java.io.Serializable {
 

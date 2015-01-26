@@ -19,6 +19,8 @@ import javax.mail.internet.MimeUtility;
 
 import org.apache.log4j.Logger;
 
+import com.inter.info.utils.info.HandleEmailInfo;
+
 
 public class HandleEmail {
 
