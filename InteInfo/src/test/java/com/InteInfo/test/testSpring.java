@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.InteInfo.server.IUserService;
+import com.inter.info.server.IUserService;
 
 public class testSpring {
 	/**

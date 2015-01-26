@@ -42,7 +42,7 @@
 
 			<!-- 字符集拦截器 -->
 			<interceptor name="encodingInterceptor"
-				class="com.InteInfo.Interceptor.EncodingInterceptor" />
+				class="com.inter.info.interceptor.EncodingInterceptor" />
 			<interceptor-stack name="encodingStack">
 				<interceptor-ref name="annotatedStack"></interceptor-ref>
 				<interceptor-ref name="encodingInterceptor"></interceptor-ref>
@@ -50,7 +50,7 @@
 
 			<!-- 全局异常拦截器 -->
 			<interceptor name="exceptionInterceptor"
-				class="com.InteInfo.Interceptor.ExceptionInterceptor" />
+				class="com.inter.info.interceptor.ExceptionInterceptor" />
 			<interceptor-stack name="exceptionStack">
 				<interceptor-ref name="encodingStack"></interceptor-ref>
 				<interceptor-ref name="exceptionInterceptor"></interceptor-ref>
@@ -59,7 +59,7 @@
 
 			<!-- Session拦截器 -->
 			<interceptor name="sessionInterceptor"
-				class="com.InteInfo.Interceptor.SessionInterceptor" />
+				class="com.inter.info.interceptor.SessionInterceptor" />
 			<interceptor-stack name="sessionStack">
 				<interceptor-ref name="exceptionStack"></interceptor-ref>
 				<interceptor-ref name="sessionInterceptor"></interceptor-ref>
